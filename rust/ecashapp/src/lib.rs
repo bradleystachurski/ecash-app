@@ -134,6 +134,7 @@ pub async fn add_recovery_relay(relay: String) {
 
 #[frb]
 pub async fn create_new_multimint(path: String) {
+    fedimint_core::rustls::install_crypto_provider().await;
     create_event_bus().await;
     let db = get_database(path).await;
     MULTIMINT
@@ -148,6 +149,7 @@ pub async fn create_new_multimint(path: String) {
 
 #[frb]
 pub async fn load_multimint(path: String) {
+    fedimint_core::rustls::install_crypto_provider().await;
     create_event_bus().await;
     let db = get_database(path).await;
     MULTIMINT
@@ -162,6 +164,7 @@ pub async fn load_multimint(path: String) {
 
 #[frb]
 pub async fn create_multimint_from_words(path: String, words: Vec<String>) {
+    fedimint_core::rustls::install_crypto_provider().await;
     create_event_bus().await;
     let db = get_database(path).await;
     MULTIMINT
@@ -783,7 +786,10 @@ pub async fn parsed_scanned_text(
 
         // If none of our joined federation's can parse the ecash, lets prompt the user to join
         if let Some(invite_code) = notes.federation_invite() {
-            return Ok((ParsedText::InviteCodeWithEcash(invite_code.to_string(), text), None));
+            return Ok((
+                ParsedText::InviteCodeWithEcash(invite_code.to_string(), text),
+                None,
+            ));
         }
 
         return Ok((ParsedText::EcashNoFederation, None));

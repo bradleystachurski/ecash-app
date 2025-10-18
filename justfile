@@ -13,4 +13,4 @@ build-linux:
   $ROOT/scripts/build-linux.sh
 
 run:
-  nix run --impure github:guibou/nixGL flutter run
+  flutter run

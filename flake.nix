@@ -1,6 +1,6 @@
 {
   inputs = {
-    fedimint.url = "github:fedimint/fedimint?rev=b983d25d4c3cce1751c54e3ad0230fc507e3aeec";
+    fedimint.url = "github:fedimint/fedimint/v0.9.0-beta.2";
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixgl.url = "github:guibou/nixGL";
@@ -96,6 +96,7 @@
               pkgs.cargo-expand
               pkgs.jdk21
               androidPkgs.android-sdk
+              pkgs.cmake
             ] ++ pkgs.lib.optionals (pkgs.stdenv.system == "x86_64-linux") [
               androidPkgs.android-studio
             ];
@@ -104,6 +105,7 @@
 	      ${old.shellHook or ""}
 
               export LD_LIBRARY_PATH="${pkgs.zlib}/lib:$LD_LIBRARY_PATH"
+              export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH"
               export NIXPKGS_ALLOW_UNFREE=1
               export ROOT="$PWD"
               export ANDROID_SDK_ROOT=${androidPkgs.android-sdk}/share/android-sdk
