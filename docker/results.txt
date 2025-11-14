@@ -1,0 +1,73 @@
+   Compiling aws-lc-sys v0.32.3
+warning: aws-lc-sys@0.32.3: Environment Variable found 'AWS_LC_SYS_NO_ASM': '1'
+warning: aws-lc-sys@0.32.3: Value: 1 is true.
+warning: aws-lc-sys@0.32.3: Environment Variable found 'CFLAGS_aarch64_linux_android': '--target=aarch64-linux-android21 --sysroot=/opt/android-sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/sysroot'
+warning: aws-lc-sys@0.32.3: Building with: CMake
+warning: aws-lc-sys@0.32.3: Symbol Prefix: Some("aws_lc_0_32_3")
+warning: aws-lc-sys@0.32.3: Environment Variable found 'CMAKE': 'cmake'
+warning: aws-lc-sys@0.32.3: CMAKE environment variable set: cmake
+error: failed to run custom build command for `aws-lc-sys v0.32.3`
+
+Caused by:
+  process didn't exit successfully: `/workspace/rust/ecashapp/target/release/build/aws-lc-sys-edee0fabcc08f437/build-script-main` (exit status: 101)
+  --- stdout
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREFIX_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREFIX
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREGENERATING_BINDINGS_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREGENERATING_BINDINGS
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EXTERNAL_BINDGEN_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EXTERNAL_BINDGEN
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_ASM_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_ASM
+  cargo:warning=Environment Variable found 'AWS_LC_SYS_NO_ASM': '1'
+  cargo:warning=Value: 1 is true.
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CFLAGS_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CFLAGS
+  cargo:rerun-if-env-changed=CFLAGS_aarch64_linux_android
+  cargo:warning=Environment Variable found 'CFLAGS_aarch64_linux_android': '--target=aarch64-linux-android21 --sysroot=/opt/android-sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/sysroot'
+  cargo:rerun-if-env-changed=CFLAGS
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREBUILT_NASM_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_PREBUILT_NASM
+  cargo:rerun-if-env-changed=AWS_LC_SYS_C_STD_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_C_STD
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_BUILDER_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_BUILDER
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREGENERATED_SRC_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_PREGENERATED_SRC
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EFFECTIVE_TARGET_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_EFFECTIVE_TARGET
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_JITTER_ENTROPY_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_NO_JITTER_ENTROPY
+  cargo:rustc-cfg=aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_STATIC_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_STATIC
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE
+  cargo:rerun-if-env-changed=CMAKE_aarch64_linux_android
+  cargo:rerun-if-env-changed=CMAKE
+  cargo:warning=Building with: CMake
+  cargo:warning=Symbol Prefix: Some("aws_lc_0_32_3")
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE
+  cargo:rerun-if-env-changed=CMAKE_aarch64_linux_android
+  cargo:rerun-if-env-changed=CMAKE
+  cargo:warning=Environment Variable found 'CMAKE': 'cmake'
+  cargo:warning=CMAKE environment variable set: cmake
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_GENERATOR_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_CMAKE_GENERATOR
+  cargo:rerun-if-env-changed=CMAKE_GENERATOR_aarch64_linux_android
+  cargo:rerun-if-env-changed=CMAKE_GENERATOR
+  cargo:rerun-if-env-changed=AWS_LC_SYS_STATIC_aarch64_linux_android
+  cargo:rerun-if-env-changed=AWS_LC_SYS_STATIC
+
+  --- stderr
+
+  thread 'main' (183) panicked at /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.32.3/builder/cmake_builder.rs:143:17:
+  AWS_LC_SYS_NO_ASM only allowed for debug builds!
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: build failed, waiting for other jobs to finish...
+note: If the build failed due to a missing target, you can run this command:
+note: 
+note:     rustup target install aarch64-linux-android
+Support for Android x86 targets will be removed in the next stable release after 3.27. See https://github.com/flutter/flutter/issues/157543 for details.
+Running Gradle task 'assembleDebug'...                          
