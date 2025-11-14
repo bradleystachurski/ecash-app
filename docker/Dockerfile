@@ -2,7 +2,7 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ANDROID_SDK_ROOT=/opt/android-sdk
-ENV ANDROID_NDK_HOME=/opt/android-sdk/ndk/25.2.9519653
+ENV ANDROID_NDK_HOME=/opt/android-sdk/ndk/27.3.13750724
 ENV PATH="$PATH:/opt/flutter/bin:/root/.cargo/bin:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools"
 
 # Install system dependencies (matching GitHub Actions runner)
@@ -48,7 +48,7 @@ RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools \
 
 RUN yes | sdkmanager --licenses \
     && sdkmanager \
-        "ndk;25.2.9519653" \
+        "ndk;27.3.13750724" \
         "platform-tools" \
         "platforms;android-34" \
         "build-tools;34.0.0"

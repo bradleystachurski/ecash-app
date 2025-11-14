@@ -36,7 +36,7 @@ org.gradle.workers.max=2
 org.gradle.jvmargs=-Xmx8G -XX:MaxMetaspaceSize=4G -XX:ReservedCodeCacheSize=512m -XX:+HeapDumpOnOutOfMemoryError
 android.useAndroidX=true
 android.enableJetifier=true
-android.ndkVersion=25.2.9519653
+android.ndkVersion=27.3.13750724
 EOF
 
 # Get Flutter dependencies
