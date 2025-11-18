@@ -71,7 +71,7 @@ docker run --rm \
     -w /workspace \
     -e CLEAN="${CLEAN}" \
     $IMAGE_NAME \
-    bash /workspace/docker/build-in-container.sh "$BUILD_MODE"
+    bash /workspace/docker/entrypoint.sh "$BUILD_MODE"
 
 echo ""
 echo "==================================="
