@@ -20,10 +20,16 @@ fi
 echo "Build mode: $BUILD_MODE"
 echo ""
 
-# Clean previous builds
-echo "Cleaning previous builds..."
-flutter clean
-rm -rf android/.gradle android/build build
+# Conditional cleaning based on CLEAN flag
+if [[ "${CLEAN}" == "1" ]]; then
+    echo "CLEAN=1 enabled - wiping all build caches..."
+    flutter clean
+    rm -rf android/.gradle android/build build
+    rm -rf rust/ecashapp/target
+else
+    echo "Quick build - using incremental build caches..."
+fi
+echo ""
 
 # Setup gradle properties (matching GitHub Actions)
 echo "Configuring Gradle..."
@@ -61,13 +67,8 @@ export BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android="--sysroot=$ANDROID_NDK_HO
 # CRITICAL: Do NOT set AWS_LC_SYS_NO_ASM=1 for release builds!
 # GitHub Actions does not set this variable, and it causes build failures with aws-lc-sys
 
-# NEW: Set Android NDK environment variables that aws-lc-sys expects
-export ANDROID_NDK_HOME="$ANDROID_NDK_HOME"
 export ANDROID_NDK_ROOT="$ANDROID_NDK_HOME"
 export ANDROID_NDK="$ANDROID_NDK_HOME"
-
-echo "Cleaning Rust build cache..."
-rm -rf rust/ecashapp/target
 
 cd "$RUST_DIR"
 cargo ndk -t arm64-v8a -o "$JNI_LIBS_DIR" build --release --target aarch64-linux-android
@@ -85,8 +86,17 @@ cd /workspace
 echo "Building Flutter APK..."
 flutter build apk --$BUILD_MODE
 
+# Rename APK with version and timestamp
+APP_NAME=$(grep '^name:' pubspec.yaml | sed 's/name: //')
+VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //' | cut -d'+' -f1)
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OLD_APK="build/app/outputs/flutter-apk/app-${BUILD_MODE}.apk"
+NEW_APK="build/app/outputs/flutter-apk/${APP_NAME}-${VERSION}-${BUILD_MODE}-${TIMESTAMP}.apk"
+
+mv "$OLD_APK" "$NEW_APK"
+
 echo ""
 echo "==================================="
 echo "Build complete!"
 echo "==================================="
-echo "APK location: build/app/outputs/flutter-apk/app-${BUILD_MODE}.apk"
+echo "APK location: $NEW_APK"

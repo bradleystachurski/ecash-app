@@ -23,6 +23,34 @@ echo "Project root: $PROJECT_ROOT"
 echo "Build mode: $BUILD_MODE"
 echo ""
 
+# Show build configuration
+echo "Build configuration:"
+if [[ "${REBUILD_IMAGE}" == "1" ]]; then
+    echo "  - REBUILD_IMAGE=1: Rebuilding Docker image"
+else
+    echo "  - Using existing Docker image (set REBUILD_IMAGE=1 to rebuild)"
+fi
+
+if [[ "${CLEAN}" == "1" ]]; then
+    echo "  - CLEAN=1: Wiping all build caches (Rust, Flutter, Gradle)"
+    # Remove Docker cache directory to force clean Gradle build
+    if [ -d "$PROJECT_ROOT/.docker-cache" ]; then
+        echo "  - Removing .docker-cache directory..."
+        # Try to remove normally first
+        if ! rm -rf "$PROJECT_ROOT/.docker-cache" 2>/dev/null; then
+            # If permission denied (root-owned files), use Docker to remove
+            echo "  - Using Docker to remove root-owned cache files..."
+            docker run --rm -v "$PROJECT_ROOT:/workspace" alpine sh -c "rm -rf /workspace/.docker-cache"
+        fi
+    fi
+else
+    echo "  - Using incremental build caches (set CLEAN=1 to wipe)"
+fi
+echo ""
+
+# Create cache directory if it doesn't exist
+mkdir -p "$PROJECT_ROOT/.docker-cache/gradle"
+
 # Build the Docker image if it doesn't exist or if forced
 IMAGE_NAME="ecash-app-builder"
 
@@ -32,7 +60,6 @@ if ! docker image inspect $IMAGE_NAME &> /dev/null || [[ "${REBUILD_IMAGE}" == "
     echo ""
 else
     echo "Using existing Docker image: $IMAGE_NAME"
-    echo "(Set REBUILD_IMAGE=1 to force rebuild)"
     echo ""
 fi
 
@@ -40,7 +67,9 @@ fi
 echo "Starting build in Docker container..."
 docker run --rm \
     -v "$PROJECT_ROOT:/workspace" \
+    -v "$PROJECT_ROOT/.docker-cache/gradle:/root/.gradle" \
     -w /workspace \
+    -e CLEAN="${CLEAN}" \
     $IMAGE_NAME \
     bash /workspace/docker/build-in-container.sh "$BUILD_MODE"
 
@@ -48,4 +77,5 @@ echo ""
 echo "==================================="
 echo "All done!"
 echo "==================================="
-echo "Your APK is at: $PROJECT_ROOT/build/app/outputs/flutter-apk/app-${BUILD_MODE}.apk"
+echo "Your APK is in: $PROJECT_ROOT/build/app/outputs/flutter-apk/"
+echo "Run 'ls -lth $PROJECT_ROOT/build/app/outputs/flutter-apk/' to see the latest build"
