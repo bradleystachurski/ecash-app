@@ -30,6 +30,9 @@ RUN git clone https://github.com/flutter/flutter.git -b stable /opt/flutter \
     && git checkout 3.32.4 \
     && flutter precache --android
 
+# Allow non-root users to use flutter (git ownership check)
+RUN git config --system --add safe.directory /opt/flutter
+
 # Install Rust (stable toolchain matching GitHub Actions)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable \
     && . $HOME/.cargo/env \
