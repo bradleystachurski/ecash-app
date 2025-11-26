@@ -31,17 +31,13 @@ fi
 
 if [[ "${CLEAN}" == "1" ]]; then
     echo "  - CLEAN=1: Wiping all build caches (Rust, Flutter, Gradle)"
-    if [ -d "$PROJECT_ROOT/.docker-cache" ]; then
-        echo "  - Removing .docker-cache directory..."
-        # Use Docker to remove since cache files are root-owned from container builds
-        docker run --rm -v "$PROJECT_ROOT:/workspace" alpine rm -rf /workspace/.docker-cache
-    fi
+    rm -rf "$PROJECT_ROOT/.docker-cache"
 else
     echo "  - Using incremental build caches (set CLEAN=1 to wipe)"
 fi
 echo ""
 
-# Create cache directory if it doesn't exist
+# Create cache directories (owned by current user)
 mkdir -p "$PROJECT_ROOT/.docker-cache/gradle"
 
 # Build the Docker image if it doesn't exist or if forced
@@ -57,12 +53,14 @@ else
 fi
 
 echo "Starting build in Docker container..."
-# Gradle user cache persists in .docker-cache (separate from repo mount)
 docker run --rm \
+    --user "$(id -u):$(id -g)" \
     -v "$PROJECT_ROOT:/workspace" \
-    -v "$PROJECT_ROOT/.docker-cache/gradle:/root/.gradle" \
+    -v "$PROJECT_ROOT/.docker-cache/gradle:/gradle-cache" \
     -w /workspace \
     -e CLEAN="${CLEAN}" \
+    -e GRADLE_USER_HOME="/gradle-cache" \
+    -e HOME="/workspace" \
     $IMAGE_NAME \
     bash /workspace/docker/entrypoint.sh "$BUILD_MODE"
 
