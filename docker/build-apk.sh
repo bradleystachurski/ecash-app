@@ -39,6 +39,7 @@ echo ""
 
 # Create cache directories (owned by current user)
 mkdir -p "$PROJECT_ROOT/.docker-cache/gradle"
+mkdir -p "$PROJECT_ROOT/.docker-cache/cargo"
 
 # Build the Docker image if it doesn't exist or if forced
 IMAGE_NAME="ecash-app-builder"
@@ -57,9 +58,11 @@ docker run --rm \
     --user "$(id -u):$(id -g)" \
     -v "$PROJECT_ROOT:/workspace" \
     -v "$PROJECT_ROOT/.docker-cache/gradle:/gradle-cache" \
+    -v "$PROJECT_ROOT/.docker-cache/cargo:/cargo-cache" \
     -w /workspace \
     -e CLEAN="${CLEAN}" \
     -e GRADLE_USER_HOME="/gradle-cache" \
+    -e CARGO_HOME="/cargo-cache" \
     -e HOME="/workspace" \
     $IMAGE_NAME \
     bash /workspace/docker/entrypoint.sh "$BUILD_MODE"
