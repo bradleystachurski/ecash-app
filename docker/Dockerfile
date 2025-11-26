@@ -60,7 +60,8 @@ RUN yes | sdkmanager --licenses \
         "platforms;android-34" \
         "platforms;android-35" \
         "build-tools;34.0.0" \
-        "build-tools;35.0.0"
+        "build-tools;35.0.0" \
+        "cmake;3.22.1"
 
 WORKDIR /workspace
 
