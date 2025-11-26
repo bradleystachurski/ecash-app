@@ -58,7 +58,9 @@ RUN yes | sdkmanager --licenses \
         "ndk;27.3.13750724" \
         "platform-tools" \
         "platforms;android-34" \
-        "build-tools;34.0.0"
+        "platforms;android-35" \
+        "build-tools;34.0.0" \
+        "build-tools;35.0.0"
 
 WORKDIR /workspace
 
