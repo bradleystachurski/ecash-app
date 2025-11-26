@@ -3,7 +3,9 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ANDROID_SDK_ROOT=/opt/android-sdk
 ENV ANDROID_NDK_HOME=/opt/android-sdk/ndk/27.3.13750724
-ENV PATH="$PATH:/opt/flutter/bin:/root/.cargo/bin:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools"
+ENV RUSTUP_HOME=/opt/rustup
+ENV CARGO_HOME=/opt/cargo
+ENV PATH="/opt/cargo/bin:/opt/flutter/bin:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
 
 # Install system dependencies (matching GitHub Actions runner)
 RUN apt-get update && apt-get install -y \
@@ -34,13 +36,14 @@ RUN git clone https://github.com/flutter/flutter.git -b stable /opt/flutter \
 RUN git config --system --add safe.directory /opt/flutter \
     && chmod -R a+w /opt/flutter
 
-# Install Rust (stable toolchain matching GitHub Actions)
+# Install Rust (stable toolchain, system-wide for all users)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable \
-    && . $HOME/.cargo/env \
-    && rustup target add aarch64-linux-android
+    && rustup target add aarch64-linux-android \
+    && chmod -R a+rx /opt/rustup /opt/cargo
 
 # Install cargo-ndk
-RUN . $HOME/.cargo/env && cargo install cargo-ndk
+RUN cargo install cargo-ndk \
+    && chmod -R a+rx /opt/cargo
 
 # Install Android SDK command-line tools
 RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools \
