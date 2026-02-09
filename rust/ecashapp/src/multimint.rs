@@ -1135,14 +1135,43 @@ impl Multimint {
             .expect("No wallet module present");
         let network = wallet.get_network().to_string();
 
+        // Load cached guardian versions so we can preserve them when a guardian is offline
+        let cached_versions: BTreeMap<u16, Option<String>> = {
+            let mut dbtx = self.db.begin_transaction_nc().await;
+            dbtx.get_value(&FederationMetaKey { federation_id })
+                .await
+                .map(|m| {
+                    m.guardians
+                        .into_iter()
+                        .map(|g| (g.peer_id, g.version))
+                        .collect()
+                })
+                .unwrap_or_default()
+        };
+
         let peers = &config.global.api_endpoints;
         let mut guardians = Vec::new();
         for (peer_id, endpoint) in peers {
-            let fedimintd_version = client.api().fedimintd_version(*peer_id).await.ok();
+            let pid = peer_id.to_usize() as u16;
+            let fetched_version = client.api().fedimintd_version(*peer_id).await.ok();
+            let version = match &fetched_version {
+                Some(v) => {
+                    let cached = cached_versions.get(&pid).and_then(|c| c.as_ref());
+                    if cached == Some(v) {
+                        // Version unchanged, keep cached
+                        cached.cloned()
+                    } else {
+                        // New or changed version
+                        fetched_version
+                    }
+                }
+                // API returned None (guardian offline), preserve cached version
+                None => cached_versions.get(&pid).cloned().flatten(),
+            };
             guardians.push(Guardian {
-                peer_id: peer_id.to_usize() as u16,
+                peer_id: pid,
                 name: endpoint.name.clone(),
-                version: fedimintd_version,
+                version,
             });
         }
 
