@@ -64,8 +64,9 @@ use crate::{
     anyhow,
     db::{
         BitcoinDisplay, BitcoinDisplayKey, BtcPrice, BtcPriceKey, BtcPrices, BtcPricesKey,
-        Connector, ContactSyncConfigKey, FederationBackupKey, FederationMetaKey, FiatCurrency,
-        FiatCurrencyKey, LightningAddressConfig, LightningAddressKey, LightningAddressKeyPrefix,
+        Connector, ContactSyncConfigKey, FederationBackupKey, FederationMetaKey,
+        FederationMetaKeyPrefix, FiatCurrency, FiatCurrencyKey, LightningAddressConfig,
+        LightningAddressKey, LightningAddressKeyPrefix, SchemaVersionKey,
     },
     error_to_flutter, get_nostr_client, info_to_flutter, FederationConfig, FederationConfigKey,
     FederationConfigKeyPrefix, SeedPhraseAckKey,
@@ -139,6 +140,7 @@ pub struct FederationMeta {
 
 #[derive(Debug, Serialize, Clone, Eq, PartialEq, Encodable, Decodable)]
 pub struct Guardian {
+    pub peer_id: u16,
     pub name: String,
     pub version: Option<String>,
 }
@@ -432,11 +434,34 @@ impl Multimint {
             .spawn_pegin_address_watcher(pegin_address_monitor_rx)
             .await?;
         multimint.monitor_all_unused_pegin_addresses().await?;
+        multimint.run_migrations().await;
         multimint.spawn_cache_task();
         multimint.spawn_recurring_invoice_listener();
 
         info_to_flutter(format!("Initialized Multimint in {:?}", start.elapsed())).await;
         Ok(multimint)
+    }
+
+    async fn run_migrations(&self) {
+        let mut dbtx = self.db.begin_transaction().await;
+        let current_version = dbtx.get_value(&SchemaVersionKey).await.unwrap_or(0);
+
+        if current_version < 1 {
+            // Migration v1: Guardian struct gained peer_id field.
+            // Purge cached FederationMeta entries so they get rebuilt with the new format.
+            dbtx.remove_by_prefix(&FederationMetaKeyPrefix).await;
+            info_to_flutter("Purged FederationMeta cache for schema migration v1").await;
+        }
+
+        let target_version: u64 = 1;
+        if current_version < target_version {
+            dbtx.insert_entry(&SchemaVersionKey, &target_version).await;
+            dbtx.commit_tx().await;
+            info_to_flutter(format!(
+                "Database migrated from v{current_version} to v{target_version}"
+            ))
+            .await;
+        }
     }
 
     async fn load_clients(&mut self) -> anyhow::Result<()> {
@@ -1115,6 +1140,7 @@ impl Multimint {
         for (peer_id, endpoint) in peers {
             let fedimintd_version = client.api().fedimintd_version(*peer_id).await.ok();
             guardians.push(Guardian {
+                peer_id: peer_id.to_usize() as u16,
                 name: endpoint.name.clone(),
                 version: fedimintd_version,
             });

@@ -662,7 +662,7 @@ class _FederationPreviewState extends State<FederationPreview> {
                         try {
                           final inviteCode = await getInviteCode(
                             federationId: widget.fed.federationId,
-                            peer: index,
+                            peer: peer.peerId,
                           );
                           if (!context.mounted) return;
                           await Clipboard.setData(
@@ -696,7 +696,7 @@ class _FederationPreviewState extends State<FederationPreview> {
                         try {
                           final inviteCode = await getInviteCode(
                             federationId: widget.fed.federationId,
-                            peer: index,
+                            peer: peer.peerId,
                           );
                           if (!context.mounted) return;
                           showDialog(
