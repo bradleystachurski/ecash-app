@@ -22,6 +22,7 @@
   - `pubspec.yaml`: `version: X.Y.Z+VCODE` (see Version Code Reference below)
   - `rust/ecashapp/Cargo.toml`: `version = "X.Y.Z"`
   - `linux/appstream/org.fedimint.app.appdata.xml`: Add `<release version="X.Y.Z" date="YYYY-MM-DD" />` entry
+  - `metadata/en-US/changelogs/VCODE.txt`: Add changelog for F-Droid (max 500 chars)
 - Commit: `git commit -am "chore: bump version to vX.Y.Z"`
 - Push: `git push upstream releases/vX.Y.Z`
 - Tag: `git tag -a -s vX.Y.Z`
